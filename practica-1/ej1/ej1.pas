@@ -17,9 +17,10 @@ Begin
     ReadLn(nomMaterial);
     While (nomMaterial <> FIN ) Do
         Begin
-            Write(archivo,nomMaterial +'-');
+            Write(archivo,nomMaterial+ ' ');
             WriteLn('Ingrese el nombre del material: ');
             ReadLn(nomMaterial);
         End;
+    Write(archivo,nomMaterial);
     Close(archivo);
 End.

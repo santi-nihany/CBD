@@ -14,6 +14,14 @@ Type
     End;
     arch_flores =   file Of flores;
 
+
+Var 
+    archivo_bin:   arch_flores;
+    reg_flores:   flores;
+    especies, max_alt, min_alt,opcion:   integer;
+    min_alt_nombre, max_alt_nombre:   String;
+
+
 Procedure leerFlor(Var reg_flores: flores);
 Begin
     WriteLn('Ingrese nombre cientifico');
@@ -48,26 +56,87 @@ Begin
 End;
 
 Procedure listarArchivo(Var arch: arch_flores);
-
 Var 
     flor:   flores;
 Begin
     Reset(arch);
-    While (eof(arch)) Do
+    While Not (Eof(arch)) Do
         Begin
             Read(arch, flor);
-            WriteLn('N°: ', flor.nro_esp,' Alt max: ', flor.alt_max,
-                    ' Nombre C: '
-                    ,flor.nombreC,' Nombre V: ', flor.nombreV,' Color: ', flor.
-                    color);
+            WriteLn('Nro de especie: ', flor.nro_esp,
+                    '// Alt max: ', flor.alt_max,
+                    '// Nombre C: ',flor.nombreC,
+                    '// Nombre V: ', flor.nombreV,
+                    '// Color: ', flor.color
+                    );
         End;
+    Readln();
+    Close(arch);
 End;
 
+Procedure modificarNombre(Var arch: arch_flores);
 Var 
-    archivo_bin:   arch_flores;
-    reg_flores:   flores;
-    especies, max_alt, min_alt,opcion:   integer;
-    min_alt_nombre, max_alt_nombre:   String;
+    flor:   flores;
+Begin
+    Reset(arch);
+    While Not (Eof(arch)) Do
+        Begin
+            Read(arch, flor);
+            If (flor.nombreC = 'Victoria amazonia') Then
+                Begin
+                    flor.nombreC := 'Victoria amazonica';
+                    Seek(arch, FilePos(arch) - 1);
+                    Write(arch, flor);
+                    WriteLn('Nombre modificado');
+                End;
+        End;
+    listarArchivo(arch);
+    Close(arch);
+End;
+
+Procedure anadirespecies(Var arch: arch_flores);
+Var 
+    flor:   flores;
+Begin
+    Reset(arch);
+    While Not (Eof(arch)) Do
+        Begin
+            Read(arch, flor);
+        End;
+    leerFlor(flor);
+    While (flor.nombreC <> FIN) Do
+        Begin
+            Write(arch, flor);
+            leerFlor(flor);
+        End;
+    listarArchivo(arch);
+    Close(arch);
+End;
+
+Procedure convertir_txt(Var arch: arch_flores);
+Var 
+    flor:   flores;
+    arch_txt:   Text;
+Begin
+    Reset(arch);
+    Assign(arch_txt, 'flores.txt');
+    Rewrite(arch_txt);
+    While Not (Eof(arch)) Do
+        Begin
+            Read(arch, flor);
+            WriteLn(arch_txt, 'Nro de especie: ', flor.nro_esp,
+                    '// Alt max: ', flor.alt_max,
+                    '// Nombre C: ',flor.nombreC,
+                    '// Nombre V: ', flor.nombreV,
+                    '// Color: ', flor.color
+                    );
+        End;
+    Close(arch);
+    Close(arch_txt);
+    ReadLn();
+End;
+
+
 Begin
     // Inicializadores
     especies := 0;
@@ -77,10 +146,10 @@ Begin
     max_alt_nombre := '';
 
     //archivo registros de flores
-    Assign(archivo_bin, 'flores');
+    Assign(archivo_bin, 'flores.dat');
     Rewrite(archivo_bin);
 
-    // leer until FIN
+    // leer registro until FIN y cargar registros en archivo
     leerFlor(reg_flores);
     While (reg_flores.nombreC <> FIN) Do
         Begin
@@ -105,21 +174,12 @@ Begin
     Close(archivo_bin);
 
     WriteLn('Seleccione una de las siguientes opciones: ');
-    WriteLn(
-'1) Reportar en pantalla la cantidad total de especies y la especie de menor y de mayor altura a alcanzar'
-    );
-
-
-// WriteLn('2) Listar todo el contenido del archivo de a una especie por línea.');
-
-
-// WriteLn('3) Modificar el nombre científico de la especie flores cargada como: Victoria amazonia a: Victoria amazonica.');
-
-
-// WriteLn('4) Añadir una o más especies al final del archivo con sus datos obtenidos por teclado. La carga finaliza al recibir especie “zzz”.');
-
-
-// WriteLn('5) Listar todo el contenido del archivo, en un archivo de texto llamado “flores.txt”');
+    
+    WriteLn('1) Reportar en pantalla la cantidad total de especies y la especie de menor y de mayor altura a alcanzar');
+    WriteLn('2) Listar todo el contenido del archivo de a una especie por línea.');
+    WriteLn('3) Modificar el nombre científico de la especie flores cargada como: Victoria amazonia a: Victoria amazonica.');
+    WriteLn('4) Añadir una o más especies al final del archivo con sus datos obtenidos por teclado. La carga finaliza al recibir especie “zzz”.');
+    WriteLn('5) Listar todo el contenido del archivo, en un archivo de texto llamado “flores.txt”');
     WriteLn('6) Finalizar.');
     ReadLn(opcion);
 
@@ -130,15 +190,10 @@ Begin
                  WriteLn('Nombre mayor altura maxima: ',max_alt_nombre);
                  WriteLn('Nombre menor altura maxima: ',min_alt_nombre);
              End;
-        // 2:
-        //      Begin
-        //          Assign(archivo_bin, 'flores');
-        //          listarArchivo(archivo_bin);
-
-        //      End;
-        // 3:   modificarNombre();
-        // 4:   anadirespecies(archivo_bin);
-        // 5:   convertir_txt(archivo_bin);
+        2:   listarArchivo(archivo_bin);
+        3:   modificarNombre(archivo_bin);
+        4:   anadirespecies(archivo_bin);
+        5:   convertir_txt(archivo_bin);
         6:   WriteLn('');
         Else   WriteLn('Opcion no disponible');
     End;

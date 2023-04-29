@@ -23,8 +23,8 @@ Type
     maestro = file of empleado;
     detalle = file of actualizacion;
 
-    actualizaciones = array[1..N] of actualizacion;
-    detalles = array[1..N] of detalle;
+    actualizaciones = array[1..N] of actualizacion; // registro actualizacion actual de N archivos
+    detalles = array[1..N] of detalle; // N archivos detalle recibidos
 Procedure leer(var det: detalle; var reg_d: actualizacion);
 begin
     if Not(EOF(det))then 
@@ -63,7 +63,7 @@ begin
     for i:=1 to N do 
     begin
       Reset(dets[i]); {se abren los archivos detalle}
-      Leer(dets[i],acts[i]) {se lee el primer elemento de cada uno}
+      leer(dets[i],acts[i]) {se lee el primer elemento de cada uno}
     end;
     Reset(M);
     minimo(dets, acts, min); {se busca el detalle con codigo minimo}
@@ -71,7 +71,8 @@ begin
     While(min.cod <> valoralto) do 
     begin
         totalDias:= 0;
-        while (min.cod <> reg_m.cod) do read(M, reg_m); {buscar codigo de detalle en archivo maestro}
+        while (min.cod <> reg_m.cod) do 
+            read(M, reg_m); {buscar codigo de detalle en archivo maestro}
         while(reg_m.cod = min.cod) and (min.cod <> valoralto) do
         begin
             totalDias := totalDias + min.diasLicencia;

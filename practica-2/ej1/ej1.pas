@@ -66,6 +66,7 @@ begin
       leer(dets[i],acts[i]) {se lee el primer elemento de cada uno}
     end;
     Reset(M);
+    ReWrite(arch_error);
     minimo(dets, acts, min); {se busca el detalle con codigo minimo}
     
     While(min.cod <> valoralto) do 
@@ -101,10 +102,8 @@ Var
     arch_error: Text; 
 Begin
     Assign(arch_maestro, 'empleados.dat');
-    Reset(arch_maestro);
     
     Assign(arch_error, 'error.txt');
-    ReWrite(arch_error);
 
     for i:=1 to N do 
     begin
@@ -113,4 +112,11 @@ Begin
       Assign(a_detalles[i], nombreDet);
     end;
     actualizar(arch_maestro,a_detalles, arch_error);
+
+    For i:=1 To N Do
+    Begin
+        Close(a_detalles[i]);
+    End;
+    Close(arch_maestro);
+    Close(arch_error);
 End.

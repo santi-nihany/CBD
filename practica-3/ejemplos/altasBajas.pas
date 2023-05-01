@@ -44,18 +44,17 @@ Begin
     ReadLn(rb); {Raza eliminar}
     Read(a, sLibre); {lee la cabecera}
     r:= 'zzz';
-    While (Not((r=rb) Or EoF(a))) do begin
-        Read(a, r); {busca}
-        If (r=rb) Then Begin {se encuentra la raza}
-            nLibre:=FilePos(a)-1;
-            Seek(a, nLibre); Write(a, sLibre); {Grabamos el contenido de la cabecera}
-            Str(nLibre, sLibre); {Convierte de number a string}
-            Seek(a, 0); Write(a, sLibre); {Se actualiza la cabecera}
-        End
-        Else Begin {no se encuentra la raza}
-            WriteLn; WriteLn('No existe la raza.');
-            Write('Oprima Entrar para continuar...');ReadLn;
-        End;
+    While (Not((r=rb) Or EoF(a))) do Read(a, r); {busca}
+    
+    If (r=rb) Then Begin {se encuentra la raza}
+        nLibre:=FilePos(a)-1;
+        Seek(a, nLibre); Write(a, sLibre); {Grabamos el contenido de la cabecera}
+        Str(nLibre, sLibre); {Convierte de number a string}
+        Seek(a, 0); Write(a, sLibre); {Se actualiza la cabecera}
+    End
+    Else Begin {no se encuentra la raza}
+        WriteLn; WriteLn('No existe la raza.');
+        Write('Oprima Entrar para continuar...');ReadLn;
     End;
     Close(a);
 End;

@@ -10,3 +10,7 @@ JAK1
 bici
 descripcion bici
 7
+12345
+moto
+descripcion moto
+5

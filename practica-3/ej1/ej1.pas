@@ -1,47 +1,56 @@
+
 Program ej1;
 
 Const 
-    CAR ='@';
+    CAR =   '@';
+
 Type 
-    str15 = string[15];
-    especie = record 
-        cod: string[4];
-        nombre_v: str15;
-        nombre_c: str15;
-        alt_prom: real;
-        descripcion: string[100];
-        zona_geo: str15;
-    end;
+    str15 =   string[15];
+    especie =   Record
+        cod:   string[4];
+        nombre_v:   str15;
+        nombre_c:   str15;
+        alt_prom:   real;
+        descripcion:   string[100];
+        zona_geo:   str15;
+    End;
 
-    plantas = file of especie;
+    plantas =   file Of especie;
 
-procedure compactarArch(var a: plantas; car:char; var nueArch: plantas);
-var
-    reg_e: especie; {registro de archivo}
-begin
+Procedure compactarArch(Var a: plantas; car:char; Var nueArch: plantas);
+
+Var 
+    reg_e:   especie; {registro de archivo}
+Begin
     Rewrite(nueArch);
     read(a, reg_e);
-    while(not(eof(a)))do begin
-        if(reg_e.cod <> car)then
-            Write(a,reg_e);
-        Read(a, reg_e);
-    end;
-end;
+    While (Not(eof(a))) Do
+        Begin
+            If (reg_e.cod <> car)Then
+                Write(nueArch,reg_e);
+            Read(a, reg_e);
+        End;
+End;
 
-procedure marcarReg(var a: plantas; car: char; cod: string);
-var
-    reg_e: especie; {registro de archivo}
-begin
+Procedure marcarReg(Var a: plantas; car: char; cod: String);
+
+Var 
+    reg_e:   especie; {registro de archivo}
+Begin
     read(a,reg_e);
-    while(not(Eof(a)) and (reg_e.cod <> cod)) do begin
-        read(a,reg_e);
-    end;
-    if(reg_e.cod = cod)then begin
-        seek(a, filePos(a) - 1);
-        reg_e.cod := car;
-        Write(a,reg_e);
-    end;
-end;
+    While (Not(Eof(a)) And (reg_e.cod <> cod)) Do
+        Begin
+            read(a,reg_e);
+        End;
+    If (reg_e.cod = cod)Then
+        Begin
+            seek(a, filePos(a) - 1);
+            reg_e.cod := car;
+            Write(a,reg_e);
+        End;
+End;
+
+
 
 {
     Elimina registros por codigo de archivo tipo 'plantas'. 
@@ -49,46 +58,52 @@ end;
     y posteriormente compacta el archivo,creando un nuevo 
     archivo sin los registros eliminados [compactarArch()].
 }
-procedure bajaLogica (var a: plantas; car: char; var nueArch: plantas);
-var
-    cod: string[4];
-begin
+Procedure bajaLogica (Var a: plantas; car: char; Var nueArch: plantas);
+
+Var 
+    cod:   string[4];
+Begin
     Reset(a);
     WriteLn('Ingrese codigo a eliminar: ');
     ReadLn(cod);
     While (cod <> 'ZZZZ') Do
-    Begin
-        marcarReg(a, CAR, cod);
-        WriteLn('Ingrese codigo a eliminar: ');
-        ReadLn(cod);
-    End;
-    
+        Begin
+            marcarReg(a, CAR, cod);
+            WriteLn('Ingrese codigo a eliminar: ');
+            ReadLn(cod);
+        End;
+
     compactarArch(a, CAR, nueArch);
 
     Close(a);
     Close(nueArch);
-end;
+End;
 
-procedure borrarReg(var a: plantas; cod: string);
-var
-    reg_e, aux: especie; {registro de archivo y último registro}
-    posBorrar: Int64;
-begin
+Procedure borrarReg(Var a: plantas; cod: String);
+
+Var 
+    reg_e, aux:   especie; {registro de archivo y último registro}
+    posBorrar:   Int64;
+Begin
     read(a, reg_e);
-    while(not(Eof(a)) and (reg_e.cod <> cod))do begin
-        Read(a, reg_e);
-    end;
+    While (Not(Eof(a)) And (reg_e.cod <> cod)) Do
+        Begin
+            Read(a, reg_e);
+        End;
 
-    if(reg_e.cod = cod)then begin
-        posBorrar:= FilePos(a) - 1;
-        seek(a,filesize(a) - 1); {pos último registro}
-        read(a, aux);
-        seek(a, posBorrar); {pos registro a borrar}
-        write(a,aux); {reemplazo registro}
-        seek(a,filesize(a) - 1); {pos último registro}
-        Truncate(a); {elimino último registro}
-    end;
-end;
+    If (reg_e.cod = cod)Then
+        Begin
+            posBorrar := FilePos(a) - 1;
+            seek(a,filesize(a) - 1); {pos último registro}
+            read(a, aux);
+            seek(a, posBorrar); {pos registro a borrar}
+            write(a,aux); {reemplazo registro}
+            seek(a,filesize(a) - 1); {pos último registro}
+            Truncate(a); {elimino último registro}
+        End;
+End;
+
+
 
 {
     Elimina registros por codigo de archivo tipo 'plantas'.
@@ -97,26 +112,27 @@ end;
     elimina del archivo el último registro de forma tal de 
     evitar registros duplicados.
 }
-procedure bajaFisica(var a: plantas);
-var 
-    cod: string[4];
-begin
+Procedure bajaFisica(Var a: plantas);
+
+Var 
+    cod:   string[4];
+Begin
     Reset(a);
     WriteLn('Ingrese codigo a eliminar: ');
     ReadLn(cod);
     While (cod <> 'ZZZZ') Do
-    Begin
-        borrarReg(a,cod);
-        WriteLn('Ingrese codigo a eliminar: ');
-        ReadLn(cod);
-    End;
+        Begin
+            borrarReg(a,cod);
+            WriteLn('Ingrese codigo a eliminar: ');
+            ReadLn(cod);
+        End;
 
     Close(a);
 
-end;
+End;
 
 Var 
-    a, nueArch: plantas;  
+    a, nueArch:   plantas;
 Begin
     Assign(a, 'plantas.dat');
     Assign(nueArch, 'nuevoPlantas.dat');
